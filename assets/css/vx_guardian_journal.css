@@ -1,0 +1,7 @@
+
+.vx-journal{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px;background:rgba(16,24,40,.55)}
+.vx-journal h4{margin:0 0 8px 0;font-size:14px}
+.vx-journal textarea{width:100%;min-height:80px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#eaf0ff;padding:8px;resize:vertical}
+.vx-journal .vx-journal-meta{font-size:12px;opacity:.8;margin-bottom:6px}
+
+.tg-perf *{animation:none!important;}

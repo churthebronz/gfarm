@@ -1,0 +1,12 @@
+
+/* Hide any legacy floating CTA/blue footer button if remains */
+#footer-cta, .footer-cta, .vx-footer-cta, .tg-fab { display:none !important; }
+/* Hide legacy back-to-top conflicting buttons to avoid duplication */
+#toTop, .back-to-top, .btn-to-top { display:none !important; }
+
+
+/* Aggressive removal of old back-to-top variants */
+#toTop, .toTop, .back-to-top, .btn-to-top, .scroll-to-top, .scrollTop, #rocket-to-top, #back-top, #backTop, .tg-fab,
+#scrollTop, .cd-top, .go-top, .gotop, .backtop, #backtop, .backtotop, .scrollup { display:none !important; visibility:hidden !important; opacity:0 !important; pointer-events:none !important; }
+
+.tg-perf *{animation:none!important;}

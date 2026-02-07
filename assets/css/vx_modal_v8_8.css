@@ -1,0 +1,15 @@
+
+#vx-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1050;background:rgba(0,0,0,.35);backdrop-filter:blur(2px)}
+#vx-modal.show{display:flex}
+#vx-modal .box{min-width:280px;max-width:90vw;padding:18px 20px;border-radius:16px;background:linear-gradient(180deg,rgba(18,12,8,0.95),rgba(18,12,8,0.88));border:1px solid rgba(255,174,0,.25);box-shadow:0 8px 28px rgba(0,0,0,.45);text-align:center;color:#ffe9cf}
+#vx-modal .title{font-weight:900;margin-bottom:8px;background:linear-gradient(90deg,#ffae00,#ff6a00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#vx-modal .msg{font-weight:800;margin-top:6px}
+#vx-modal .ok{margin-top:14px;border:0;border-radius:10px;padding:9px 16px;font-weight:900;background:linear-gradient(90deg,#ffae00,#ff6a00);color:#1b1200;box-shadow:0 0 16px rgba(255,174,0,.25);}
+#vx-modal .icon{width:64px;height:64px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+#vx-modal .icon.ok{background:rgba(0,180,60,.12);border-color:rgba(0,180,60,.35)}
+#vx-modal .icon.fail{background:rgba(200,0,0,.12);border-color:rgba(200,0,0,.35)}
+#vx-modal .icon svg{width:34px;height:34px;fill:#ffae00}
+#vx-modal .icon.ok svg{fill:#1fe074}
+#vx-modal .icon.fail svg{fill:#ff6a6a}
+
+.tg-perf *{animation:none!important;}

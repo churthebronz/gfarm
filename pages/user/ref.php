@@ -1,0 +1,1 @@
+<?php define('FastCore', true); require __DIR__.'/referals.php';

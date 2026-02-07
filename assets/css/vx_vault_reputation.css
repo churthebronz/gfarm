@@ -1,0 +1,14 @@
+
+.vx-vault-rep{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px;border-radius:999px;
+  font-size:12px;font-weight:800;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+}
+.vx-vault-rep.stable{border-color:rgba(148,163,184,.35)}
+.vx-vault-rep.mature{border-color:rgba(0,243,255,.35)}
+.vx-vault-rep.prime{border-color:rgba(255,200,74,.45)}
+.vx-vault-rep.ascended{border-color:rgba(124,92,255,.55)}
+
+.tg-perf *{animation:none!important;}

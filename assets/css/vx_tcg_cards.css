@@ -1,0 +1,187 @@
+/* GreenFarm TCG Card System (Visual-only) */
+:root{
+  --tcg-radius:18px;
+  --tcg-radius-lg:22px;
+  --tcg-border:1.5px;
+  --tcg-sheen: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.14) 35%, transparent 55%);
+  --tcg-glow-soft: 0 10px 28px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08);
+  --tcg-glow-rare: 0 12px 30px rgba(0,0,0,.35), 0 0 26px rgba(0,243,255,.22);
+  --tcg-glow-epic: 0 12px 30px rgba(0,0,0,.35), 0 0 30px rgba(124,92,255,.25);
+  --tcg-glow-leg: 0 14px 34px rgba(0,0,0,.38), 0 0 34px rgba(255,210,90,.22);
+  --tcg-glow-mythic: 0 16px 38px rgba(0,0,0,.42), 0 0 44px rgba(255,215,0,.28);
+}
+
+.vx-tcg-card{
+  position:relative;
+  border-radius:var(--tcg-radius-lg);
+  overflow:hidden;
+  background:
+    radial-gradient(900px 420px at -20% -20%, rgba(0,255,224,.12), transparent 55%),
+    radial-gradient(900px 420px at 120% 120%, rgba(124,92,255,.12), transparent 55%),
+    rgba(12,18,28,.92);
+  box-shadow:var(--tcg-glow-soft);
+  border:1px solid rgba(255,255,255,.10);
+  transform: translateZ(0);
+}
+
+.vx-tcg-card::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:var(--tcg-sheen);
+  transform: translateX(-40%) rotate(12deg);
+  opacity:.0;
+  transition: opacity .18s ease, transform .55s ease;
+  pointer-events:none;
+}
+
+.vx-tcg-card:hover::before,
+.vx-tcg-card:focus-within::before{
+  opacity:.9;
+  transform: translateX(45%) rotate(12deg);
+}
+
+.vx-tcg-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 14px 8px 14px;
+}
+.vx-tcg-name{
+  font-weight:800;
+  letter-spacing:.2px;
+  line-height:1.15;
+  font-size:1.02rem;
+  margin:0;
+}
+.vx-tcg-badge{
+  font-size:.72rem;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.22);
+  color:rgba(255,255,255,.92);
+  white-space:nowrap;
+}
+
+.vx-tcg-art{
+  position:relative;
+  padding:0 14px 12px 14px;
+}
+.vx-tcg-art .frame{
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+.vx-tcg-art img{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.vx-tcg-bottom{
+  padding:10px 14px 14px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.vx-stars{
+  display:flex;
+  gap:4px;
+  align-items:center;
+}
+.vx-stars .s{
+  width:14px;height:14px;
+  display:inline-grid;place-items:center;
+  font-size:13px;
+  line-height:1;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,.25));
+  opacity:.92;
+}
+
+.vx-chiprow{ display:flex; flex-wrap:wrap; gap:8px; }
+.vx-chip{
+  font-size:.72rem;
+  padding:6px 9px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.9);
+}
+
+.vx-tcg-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.vx-btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg, rgba(0,243,255,.18), rgba(124,92,255,.18));
+  color:rgba(255,255,255,.95);
+  font-weight:800;
+  text-decoration:none;
+  flex:1;
+}
+.vx-btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.92);
+  text-decoration:none;
+  min-width:54px;
+}
+
+/* Rarity frames (apply class to vx-tcg-card) */
+.vx-tcg-card.r-common{ box-shadow:var(--tcg-glow-soft); }
+.vx-tcg-card.r-rare{ box-shadow:var(--tcg-glow-rare); border-color:rgba(0,243,255,.22); }
+.vx-tcg-card.r-epic{
+  box-shadow:var(--tcg-glow-epic);
+  border:1px solid transparent;
+  background:
+    linear-gradient(rgba(12,18,28,.92), rgba(12,18,28,.92)) padding-box,
+    linear-gradient(120deg, rgba(124,92,255,.9), rgba(0,243,255,.85)) border-box;
+}
+.vx-tcg-card.r-legendary{ box-shadow:var(--tcg-glow-leg); border-color:rgba(255,210,90,.24); }
+.vx-tcg-card.r-mythic{ box-shadow:var(--tcg-glow-mythic); border-color:rgba(255,215,0,.26); }
+
+.vx-silhouette{
+  filter: blur(1px) grayscale(1) brightness(.25);
+  transform: scale(1.02);
+}
+.vx-mystery-glow{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(360px 220px at 30% 35%, rgba(124,92,255,.18), transparent 60%),
+    radial-gradient(420px 260px at 70% 65%, rgba(0,243,255,.16), transparent 60%);
+  pointer-events:none;
+}
+
+/* Mobile sizing */
+@media (max-width:520px){
+  .vx-tcg-name{ font-size:.98rem; }
+  .vx-tcg-top{ padding:11px 12px 7px 12px; }
+  .vx-tcg-art{ padding:0 12px 11px 12px; }
+  .vx-tcg-bottom{ padding:10px 12px 12px 12px; }
+}
+
+
+/* Featured Guardian (dashboard): desktop split layout */
+@media (min-width: 860px){
+  .vx-featured-card{ display:grid; grid-template-columns: 1.15fr .85fr; grid-template-areas: "top art" "bottom art"; gap:0; }
+  .vx-featured-card .vx-tcg-top{ grid-area: top; padding-right: 16px; }
+  .vx-featured-card .vx-tcg-art{ grid-area: art; padding: 14px 14px 14px 0; }
+  .vx-featured-card .vx-tcg-bottom{ grid-area: bottom; padding-right: 16px; }
+  .vx-featured-card .vx-tcg-art .frame{ height: 100%; min-height: 260px; }
+  .vx-featured-card .vx-tcg-art img{ height: 100%; min-height: 260px; object-fit: cover; }
+}
+
+.tg-perf *{animation:none!important;}

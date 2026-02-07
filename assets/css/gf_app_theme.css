@@ -1,0 +1,95 @@
+/* GreenFarm Global Theme — applies the Menu.php "green + bubbles" vibe across the entire mini-app */
+:root{
+  --gf-ink:#eafff6;
+  --gf-muted:rgba(234,255,246,.74);
+  --gf-border:rgba(255,255,255,.10);
+  --gf-border2:rgba(255,255,255,.06);
+  --gf-glow: rgba(45,255,184,.22);
+  --gf-glow2: rgba(47,216,255,.18);
+  --gf-warn: rgba(255,216,106,.20);
+  --gf-bgA: rgba(7,10,12,.94);
+  --gf-bgB: rgba(9,14,16,.94);
+}
+
+/* Keep Telegram safe-area stable */
+html, body{
+  height: 100%;
+  background: transparent !important;
+}
+
+body{
+  color: var(--gf-ink);
+  overflow-x: hidden;
+}
+
+/* Keep TG WebView layouts tight + centered */
+.wrapper{
+  width: 100%;
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 520px){
+  .wrapper{ padding-left: 10px; padding-right: 10px; }
+}
+
+/* Ensure dashboard content never sits behind the dock */
+body.vx-account .heightpage{ padding-bottom: calc(var(--vx-dock-h, 96px) + env(safe-area-inset-bottom,0px) + 16px) !important; }
+
+/* Ambient background layer (fixed, always-on) */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(1100px 520px at 50% -10%, rgba(45,255,184,.16), transparent 60%),
+    radial-gradient(760px 360px at 12% 0%, rgba(47,216,255,.14), transparent 62%),
+    radial-gradient(620px 340px at 88% 8%, rgba(255,216,106,.10), transparent 62%),
+    radial-gradient(980px 520px at 30% 120%, rgba(45,255,184,.10), transparent 64%),
+    linear-gradient(180deg, var(--gf-bgA), var(--gf-bgB));
+}
+
+/* Soft glass haze + subtle vignette */
+body::after{
+  content:"";
+  position: fixed;
+  inset: -1px;
+  z-index: -1;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 50% 18%, rgba(255,255,255,.06), transparent 62%),
+    radial-gradient(1200px 700px at 50% 120%, rgba(0,0,0,.48), transparent 60%);
+  mix-blend-mode: normal;
+}
+
+/* Particle dots layer (CSS-only) */
+.gf-bg-dots{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.gf-bg-dots i{
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: rgba(45,255,184,.50);
+  box-shadow: 0 0 18px rgba(45,255,184,.28);
+  opacity: .85;
+  animation: gfFloat 7.5s ease-in-out infinite;
+}
+.gf-bg-dots i:nth-child(3n){ background: rgba(47,216,255,.45); box-shadow: 0 0 18px rgba(47,216,255,.24); }
+.gf-bg-dots i:nth-child(5n){ background: rgba(255,216,106,.40); box-shadow: 0 0 18px rgba(255,216,106,.18); opacity:.75; }
+@keyframes gfFloat{
+  0%,100%{ transform: translate3d(0,0,0) scale(1); }
+  50%{ transform: translate3d(0,-18px,0) scale(1.08); }
+}
+
+/* Make main app container use dynamic viewport height (prevents TG reflow jump) */
+.vx-app, .gf-app, .app, #app, #root{
+  min-height: 100svh;
+}
+
+.tg-perf *{animation:none!important;}

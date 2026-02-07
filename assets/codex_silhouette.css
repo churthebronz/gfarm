@@ -1,0 +1,4 @@
+
+.codex-item.locked{filter:brightness(.2);position:relative}
+.codex-item.locked:after{content:'?';position:absolute;inset:0;display:grid;place-items:center;color:#7ff;font-size:28px}
+.codex-rarity{font-size:12px;opacity:.7}

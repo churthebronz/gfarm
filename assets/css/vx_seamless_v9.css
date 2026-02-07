@@ -1,0 +1,45 @@
+/* vx_seamless_v9.css — Update_04
+   Purpose: remove legacy "boxed card wrapper" look so header/content/footer feel like one seamless surface.
+   This file is loaded LAST to override style.css/style2.css safely.
+*/
+:root{
+  --vx-shell: var(--gf-shell, min(1140px, calc(100% - 16px)));
+}
+
+/* Remove visible card box around main content */
+.heightpage{
+  max-width: none !important;
+}
+
+.wrapper{
+  width: var(--vx-shell) !important;
+  margin: 0 auto !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  backdrop-filter: none !important;
+  overflow: visible !important;
+}
+
+/* If any pages add inner "card" wrappers, keep them breathable but not boxed by default */
+.wrapper > .container,
+.wrapper > .container-fluid{
+  background: transparent !important;
+}
+
+/* Optional: reduce legacy margins that create a framed look */
+.wrapper + .vx-dock,
+.wrapper + footer,
+footer{
+  margin-top: 0 !important;
+}
+
+:root{
+  --gf-app-shell: min(1100px, calc(100vw - 24px));
+}
+.gf-app-shell{
+  width: var(--gf-app-shell);
+  margin-left: auto;
+  margin-right: auto;
+}

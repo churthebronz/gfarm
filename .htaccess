@@ -1,0 +1,34 @@
+RewriteEngine On
+RewriteBase /
+
+# --- PHP session cookie hardening for Telegram WebApp ---
+# Works on many cPanel setups. If ignored, set the same values in MultiPHP INI Editor.
+<IfModule mod_php7.c>
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value session.cookie_samesite "None"
+</IfModule>
+<IfModule mod_php.c>
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value session.cookie_samesite "None"
+</IfModule>
+
+# Force HTTPS (redirect HTTP → HTTPS)
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirect www → non-www (optional — remove if you prefer www)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+
+# Allow static Mini App assets directly (must be BEFORE the catch-all)
+RewriteRule ^webapp/ - [L]
+
+# Canonical user landing (never serve /user directly)
+RewriteRule ^user/?$ /user/dashboard [R=302,L]
+
+# Handle all requests via index.php if file/folder doesn’t exist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L]

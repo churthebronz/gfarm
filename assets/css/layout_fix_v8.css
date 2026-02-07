@@ -1,0 +1,11 @@
+/* v8: Keep page content below the fixed dashboard menu */
+:root { --app-top: 0px; }
+html, body { scroll-padding-top: var(--app-top); }
+body { padding-top: var(--app-top); }
+
+/* Optional: when pages use #app or .content wrapper, ensure they inherit padding */
+#app, .content, .page-content, main { padding-top: 0; } /* rely on body padding */
+
+/* v8.2: stacked headers support (menu-h + menu) */
+#site-menu { margin-top: var(--menuh, 0px); } /* push main menu below header bar */
+.tg-perf *{animation:none!important;}
