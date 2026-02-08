@@ -9,6 +9,7 @@ try {
   require_once __DIR__ . '/../../core/auth_mw.php';
   require_once __DIR__ . '/../../core/schema_helpers.php';
   require_once __DIR__ . '/../../core/earnings_helpers.php';
+require_once __DIR__ . '/../require_tg_session.php';
 } catch (Throwable $e) {
   echo json_encode(array('ok'=>false,'msg'=>'Bootstrap failed')); exit;
 }
@@ -20,7 +21,7 @@ function vx_json($arr){
 }
 
 global $db;
-$uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); vx_json(array('ok'=>false,'msg'=>'Unauthorized')); }
 
 $action = strtolower((string)($_GET['action'] ?? $_POST['action'] ?? 'state'));

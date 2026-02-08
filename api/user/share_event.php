@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../core/vx_quests.php';
 
 vx_rate_limit_or_429('api_share', 10, 60, true);
 
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); echo json_encode(['ok'=>false,'error'=>'not_auth']); exit; }
 
 $raw = file_get_contents('php://input');

@@ -7,9 +7,10 @@ require_once __DIR__ . '/../../core/config.php';
 require_once __DIR__ . '/../../core/auth_mw.php';
 require_once __DIR__ . '/../../core/seasons.php';
 require_once __DIR__ . '/../../core/season pass.php';
+require_once __DIR__ . '/../require_tg_session.php';
 
 if (!isset($_SESSION)) { session_start(); }
-$uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); echo json_encode(['ok'=>false,'error'=>'unauthorized']); exit; }
 
 global $db;

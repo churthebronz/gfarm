@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../core/auth_mw.php';
 require_once __DIR__ . '/../../core/csrf.php';
 require_once __DIR__ . '/../../core/rate_limit.php';
 require_once __DIR__ . '/../../core/wallets.php';
+require_once __DIR__ . '/../require_tg_session.php';
 
 function vx_json(array $data, int $code = 200): void {
     http_response_code($code);
@@ -22,7 +23,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 global $db;
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) {
     vx_json(['ok' => false, 'msg' => 'Unauthorized'], 401);
 }

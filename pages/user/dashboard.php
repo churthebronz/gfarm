@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../core/earnings_helpers.php';
 require_once __DIR__ . "/../../core/vx_guardians.php";
 require_once __DIR__ . '/../../core/seasons.php';
 require_once __DIR__ . '/../../core/season_pass.php';
+require_once __DIR__ . '/../../core/vx_activity.php';
 
 // NOTE:
 // Some routes include pages inside a closure (error boundary). In that case,
@@ -80,8 +81,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 $uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
 
-// If no PHP session uid (Telegram WebApp case), use tg_sess via require_tg_session.php
+// If no PHP session uid (Telegram WebApp case), use tg_sess via require_tg_session.php.
+// Use SOFT mode here so page requests can still redirect cleanly instead of emitting JSON 401.
 if ($uid <= 0) {
+    if (!defined('VX_SOFT_AUTH')) { define('VX_SOFT_AUTH', true); }
     require_once __DIR__ . '/../../api/require_tg_session.php';
     $uid = isset($GLOBALS['UID']) ? (int)$GLOBALS['UID'] : 0;
 }
@@ -96,12 +99,42 @@ require_once __DIR__ . '/../../core/vx_retention.php';
 require_once __DIR__ . '/../../core/vx_app_settings.php';
 require_once __DIR__ . '/../../core/vx_founders.php';
 
+if (!function_exists('vx_meta_get_many')) {
+    /**
+     * Batch-load multiple user_meta keys in one query to reduce dashboard query fan-out.
+     * Returns map: [key => value]. Missing keys are omitted.
+     */
+    function vx_meta_get_many($db, int $uid, array $keys): array {
+        $out = [];
+        $keys = array_values(array_unique(array_filter(array_map('strval', $keys), static function($k){ return $k !== ''; })));
+        if ($uid <= 0 || empty($keys) || !is_object($db) || !method_exists($db, 'query')) return $out;
+        $ph = implode(',', array_fill(0, count($keys), '?'));
+        $sql = "SELECT meta_key, meta_value FROM user_meta WHERE user_id=? AND meta_key IN ($ph)";
+        $params = array_merge([$uid], $keys);
+        try {
+            $rows = $db->query($sql, $params)->fetchAll();
+            foreach ((array)$rows as $r) {
+                $k = (string)($r['meta_key'] ?? '');
+                if ($k === '') continue;
+                $out[$k] = (string)($r['meta_value'] ?? '');
+            }
+        } catch (Throwable $e) {}
+        return $out;
+    }
+}
+
 // Fail-safe: even if a user lands on dashboard through a restored PHP session,
 // we still want first-login Founders grants to happen.
-try { vx_founders_on_login($db, $uid, time()); } catch (Throwable $e) {}
+try {
+    $vxFndTickKey = 'vx_founders_tick_at_' . (string)$uid;
+    $vxFndTickAt = (int)($_SESSION[$vxFndTickKey] ?? 0);
+    if ($vxFndTickAt < (time() - 600)) {
+        vx_founders_on_login($db, $uid, time());
+        $_SESSION[$vxFndTickKey] = time();
+    }
+} catch (Throwable $e) {}
 $vxStreak = 0;
 // Claim streak: increments when the user successfully collects yield (not just opens the app)
-try { $vxStreak = (int)vx_meta_get($db, $uid, 'claim_streak_days', '0'); } catch (Throwable $e) { $vxStreak = 0; }
 
 /* DB */
 if (!isset($db) || !($db instanceof db)) {
@@ -128,6 +161,17 @@ $user = $db->query(
      LIMIT 1",
     [$uid]
 )->fetchArray() ?: [];
+
+$vxMeta = vx_meta_get_many($db, $uid, [
+    'claim_streak_days',
+    'genesis_badge',
+    'founders_badge',
+    'affiliate_badge',
+    'partner_badge',
+    'lp_balance',
+    'founders_popup_seen'
+]);
+$vxStreak = (int)($vxMeta['claim_streak_days'] ?? 0);
 
 /* SAFE FALLBACKS */
 $wallet         = (float)(($user['bank'] ?? 0) + ($user['income'] ?? 0));
@@ -161,17 +205,16 @@ try {
 // Back-compat: older installs used a meta flag called "genesis_badge".
 if (!$hasSeasonPass) {
     try {
-        $hasSeasonPass = ((string)vx_meta_get($db, $uid, 'genesis_badge', '0') === '1');
+        $hasSeasonPass = ((string)($vxMeta['genesis_badge'] ?? '0') === '1');
     } catch (Throwable $e) {}
 }
 
 // New badges (cosmetic + social proof)
 $hasFounders = false;
-$hasPartner = false;
-try { $hasFounders = ((string)vx_meta_get($db, $uid, 'founders_badge', '0') === '1'); } catch (Throwable $e) { $hasFounders = false; }
+$hasFounders = ((string)($vxMeta['founders_badge'] ?? '0') === '1');
 try {
-  $hasAffiliate = ((string)vx_meta_get($db, $uid, 'affiliate_badge', '0') === '1');
-  if (!$hasAffiliate) $hasAffiliate = ((string)vx_meta_get($db, $uid, 'partner_badge', '0') === '1'); // back-compat
+  $hasAffiliate = ((string)($vxMeta['affiliate_badge'] ?? '0') === '1');
+  if (!$hasAffiliate) $hasAffiliate = ((string)($vxMeta['partner_badge'] ?? '0') === '1'); // back-compat
 } catch (Throwable $e) { $hasAffiliate = false; }
 
 /* VX list price (indicative) */
@@ -214,7 +257,7 @@ $vxNow = time();
 
 // LP balance (stored as meta; fail-soft)
 $lpBalance = 0;
-try { $lpBalance = (int)vx_meta_get($db, $uid, 'lp_balance', '0'); } catch (Throwable $e) { $lpBalance = 0; }
+$lpBalance = (int)($vxMeta['lp_balance'] ?? 0);
 
 // Crossbreed state + badges for UI
 $crossbreedAlerts = [];$vxGuardianBadges = [];
@@ -257,10 +300,10 @@ try {
     $vxFoundersVpDay = (int)vx_app_setting('founders_vp_per_day', 5);
     if ($vxFoundersVpDay < 1) $vxFoundersVpDay = 5;
     if ($vxFoundersVpDay > 100) $vxFoundersVpDay = 100;
-    $vxFoundersPopupSeen = ((string)vx_meta_get($db, $uid, 'founders_popup_seen', '0') === '1');
+    $vxFoundersPopupSeen = ((string)($vxMeta['founders_popup_seen'] ?? '0') === '1');
 
     // Claim state: founders badge is set when the Founders Guardian is granted.
-    $vxFoundersClaimed = (function_exists('vx_user_has_founders_badge')) ? (bool)vx_user_has_founders_badge($db, $uid) : ((string)vx_meta_get($db, $uid, 'founders_badge', '0') === '1');
+    $vxFoundersClaimed = (function_exists('vx_user_has_founders_badge')) ? (bool)vx_user_has_founders_badge($db, $uid) : ((string)($vxMeta['founders_badge'] ?? '0') === '1');
 
     // The Founders popup can feel like a "blur" overlay on entry (especially in TG webview).
     // Keep it focused: only auto-show when the window is active AND the user hasn't claimed yet,
@@ -283,6 +326,15 @@ try {
 
 
 /* ==== VAULT RUSH (always visible) ==== */
+$vxRushCacheKey = 'vx_dash_rush_' . (string)$uid;
+$vxRushCache = (array)($_SESSION[$vxRushCacheKey] ?? []);
+$vxRushCacheTtl = 30;
+$vxUseRushCache = (
+  !empty($vxRushCache)
+  && (int)($vxRushCache['uid'] ?? 0) === $uid
+  && (int)($vxRushCache['ts'] ?? 0) >= (time() - $vxRushCacheTtl)
+  && (int)($vxRushCache['day_start'] ?? 0) === (int)strtotime('today', $vxNow)
+);
 $vxDayStart = strtotime('today', $vxNow);
 $vxDayEnd = $vxDayStart + 86400;
 $vxRush = [
@@ -294,7 +346,9 @@ $vxRush = [
   'user_rank' => 0,
 ];
 
-try {
+if ($vxUseRushCache) {
+  $vxRush = (array)($vxRushCache['data'] ?? $vxRush);
+} else try {
   // Rush cadence: every 6h by default (configurable later)
   $interval = 21600;
   $vxRush['next_at'] = (int)(ceil($vxNow / $interval) * $interval);
@@ -303,7 +357,6 @@ try {
   // Seed activations today (prefer activity log; fall back to store add)
   $vxRush['vaults_today'] = 0;
   try {
-    require_once __DIR__ . "/../../core/vx_activity.php";
     $vxRush['vaults_today'] = (int)vx_activity_count_since($db, 'vault_buy', (int)$vxDayStart);
   } catch (Throwable $e) {
     $r = $db->query("SELECT COUNT(*) AS c FROM db_store WHERE status=1 AND `add` >= ? AND `add` < ?", [$vxDayStart, $vxDayEnd])->fetchArray();
@@ -312,7 +365,6 @@ try {
 
   // Claims today (real, based on activity log)
   try {
-    require_once __DIR__ . "/../../core/vx_activity.php";
     $vxRush['claims_today'] = (int)vx_activity_count_since($db, 'claim', (int)$vxDayStart);
   } catch (Throwable $e) { $vxRush['claims_today'] = 0; }
 
@@ -321,8 +373,7 @@ try {
 
   // Season rank (VP+LP) — true seasonal pressure
   try {
-    require_once __DIR__ . "/../../core/seasons.php";
-    require_once __DIR__ . "/../../core/vx_season_points.php";
+    require_once __DIR__ . '/../../core/vx_season_points.php';
     $sx = function_exists('vx_get_current_season') ? vx_get_current_season($db) : [];
     $sid = (int)($sx['id'] ?? 0);
     if ($sid > 0) {
@@ -340,6 +391,12 @@ try {
   } catch (Throwable $e) {
     $vxRush['user_rank'] = 1;
   }
+  $_SESSION[$vxRushCacheKey] = [
+    'uid' => $uid,
+    'ts' => time(),
+    'day_start' => (int)$vxDayStart,
+    'data' => $vxRush,
+  ];
 } catch (Throwable $e) {
   // fail-soft
 }

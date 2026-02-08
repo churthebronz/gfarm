@@ -13,7 +13,7 @@ require_once __DIR__ . '/../../core/vx_quests.php';
 
 vx_rate_limit_or_429('api_checkin', 6, 60, true);
 
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) {
   http_response_code(401);
   $resp=['ok'=>false,'error'=>'not_auth']; vx_idempo_store($db, $idemKey, $resp, 86400); echo json_encode($resp); exit;

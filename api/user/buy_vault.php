@@ -20,6 +20,7 @@ require_once __DIR__ . '/../../core/rate_limit.php';
   // Weekly quest: start at least 1 vault this week
   try{
     require_once __DIR__ . '/../../core/vx_retention.php';
+require_once __DIR__ . '/../require_tg_session.php';
     $wk = gmdate('o-\\WW');
     vx_meta_set($db, $uid, 'qwk_'.$wk.'_vault', '1');
     // optional events log
@@ -37,7 +38,7 @@ require_once __DIR__ . '/../../core/rate_limit.php';
 }
 
 global $db;
-$uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); echo json_encode(array('ok'=>false,'msg'=>'Unauthorized')); exit; }
 
 
