@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../core/auth_mw.php';
 require_once __DIR__ . '/../../core/vx_quests.php';
 require_once __DIR__ . '/../../core/vx_ref_tiers.php';
 
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); echo json_encode(['ok'=>false,'error'=>'not_auth']); exit; }
 
 $daily = vx_daily_status($db, $uid);

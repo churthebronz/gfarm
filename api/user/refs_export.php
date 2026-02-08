@@ -3,12 +3,13 @@ declare(strict_types=1);
 define('FastCore', true);
 require_once __DIR__ . '/../../core/config.php';
 require_once __DIR__ . '/../../core/schema_helpers.php';
+require_once __DIR__ . '/../require_tg_session.php';
 
 header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename="refs_export.csv"');
 
 if (!isset($_SESSION)) session_start();
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); echo 'unauthorized'; exit; }
 
 function table_exists($db, string $name): bool {

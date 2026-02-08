@@ -4,7 +4,8 @@ require_once __DIR__ . '/../../core/config.php';
 require_once __DIR__ . '/../../core/idempotency.php';
 require_once __DIR__ . '/../../core/csrf.php';
 require_once __DIR__ . '/../../core/rate_limit.php'; require_once __DIR__ . '/../../core/auth_mw.php';
-global $db; $uid=(int)($_SESSION['uid']??0); $login=(string)($_SESSION['login']??''); if($uid<=0){ http_response_code(401); $resp=['ok'=>false,'msg'=>'Unauthorized']; vx_idempo_store($db, $idemKey, $resp, 86400); echo json_encode($resp); exit; }
+require_once __DIR__ . '/../require_tg_session.php';
+global $db; $uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0)); $login=(string)($_SESSION['login']??''); if($uid<=0){ http_response_code(401); echo json_encode(['ok'=>false,'msg'=>'Unauthorized']); exit; }
 
 vx_csrf_validate_or_exit();
 vx_rate_limit_or_429('bonus_claim_u'.$uid, 6, 600, true);

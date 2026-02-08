@@ -11,11 +11,12 @@ require_once __DIR__ . '/../../core/config.php';
 require_once __DIR__ . '/../../core/schema_ensure.php';
 require_once __DIR__ . '/../../core/vx_retention.php';
 require_once __DIR__ . '/../../core/vx_founders.php';
+require_once __DIR__ . '/../require_tg_session.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) {
   echo json_encode(['ok' => false, 'msg' => 'Not signed in']);
   exit;

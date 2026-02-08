@@ -294,25 +294,27 @@ $isDock    = ($isAccount || $isHome);
     ?>
   <?php endif; ?>
 
+  <?php if ($isAccount): ?>
   <link rel="stylesheet" href="/assets/css/vx_shell.css?v=<?= htmlspecialchars((string)($config->asset_ver ?? '1'), ENT_QUOTES); ?>">
   <link rel="stylesheet" href="/assets/css/vx_tcg_cards.css?v=<?= htmlspecialchars((string)($config->asset_ver ?? '1'), ENT_QUOTES); ?>">
 
-<link rel="stylesheet" href="/assets/css/vx_elite_polish.css">
-<script defer src="/assets/js/vx_elite_polish.js"></script>
+  <link rel="stylesheet" href="/assets/css/vx_elite_polish.css">
+  <script defer src="/assets/js/vx_elite_polish.js"></script>
 
-<link rel="stylesheet" href="/assets/css/vx_vault_reputation.css">
-<link rel="stylesheet" href="/assets/css/vx_guardian_journal.css">
-<script defer src="/assets/js/vx_vault_reputation.js"></script>
-<script defer src="/assets/js/vx_collection_sets.js"></script>
-<script defer src="/assets/js/vx_guardian_journal.js"></script>
+  <link rel="stylesheet" href="/assets/css/vx_vault_reputation.css">
+  <link rel="stylesheet" href="/assets/css/vx_guardian_journal.css">
+  <script defer src="/assets/js/vx_vault_reputation.js"></script>
+  <script defer src="/assets/js/vx_collection_sets.js"></script>
+  <script defer src="/assets/js/vx_guardian_journal.js"></script>
 
-<script defer src="/assets/js/vx_vault_depth_surface.js"></script>
+  <script defer src="/assets/js/vx_vault_depth_surface.js"></script>
 
-<link rel="stylesheet" href="/assets/css/vx_guardian_context.css">
-<script defer src="/assets/js/vx_guardian_context.js"></script>
-<script defer src="/assets/js/vx_sound.js"></script>
+  <link rel="stylesheet" href="/assets/css/vx_guardian_context.css">
+  <script defer src="/assets/js/vx_guardian_context.js"></script>
+  <script defer src="/assets/js/vx_sound.js"></script>
 
-<link rel="stylesheet" href="/assets/css/vx_seamless_v9.css?v=9" />
+  <link rel="stylesheet" href="/assets/css/vx_seamless_v9.css?v=9" />
+  <?php endif; ?>
 </head>
 
 <body class="vx-app <?= $isAccount ? 'vx-account' : '' ?>" style="background:transparent">

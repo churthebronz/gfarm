@@ -8,11 +8,12 @@ header('Cache-Control: no-store');
 require_once __DIR__ . '/../../core/config.php';
 require_once __DIR__ . '/../../core/seasons.php';
 require_once __DIR__ . '/../../core/season_pass.php';
+require_once __DIR__ . '/../require_tg_session.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 global $db;
 
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 if ($uid <= 0) { http_response_code(401); echo '<svg xmlns="http://www.w3.org/2000/svg"></svg>'; exit; }
 
 $u = $db->query('SELECT login, tg_name, tg_username, points_total FROM db_users WHERE id=? LIMIT 1', $uid)->fetchArray();

@@ -14,7 +14,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   try { session_start(); } catch (Throwable $e) {}
 }
 
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 
 // TG WebApp fallback: if PHP session is missing uid, try tg_sess (same logic as dashboard)
 if ($uid <= 0) {

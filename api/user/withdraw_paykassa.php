@@ -12,13 +12,14 @@ require_once __DIR__ . '/../../core/rate_limit.php';
 require_once __DIR__ . '/../../core/idempotency.php';
 require_once __DIR__ . '/../../core/PaykassaAPI.php';
 require_once __DIR__ . '/../../core/wallets.php';
+require_once __DIR__ . '/../require_tg_session.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 global $db;
 
 vx_schema_ensure($db);
 
-$uid = (int)($_SESSION['uid'] ?? 0);
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 $login = (string)($_SESSION['login'] ?? '');
 
 if ($uid <= 0) {

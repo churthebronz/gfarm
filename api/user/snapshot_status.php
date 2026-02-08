@@ -17,7 +17,7 @@ if (is_file(__DIR__ . '/../../core/genesis.php')) {
 }
 
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
-$uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+$uid = (int)($GLOBALS['UID'] ?? ($_SESSION['uid'] ?? 0));
 
 // Telegram Mini App pages may have a valid tg_sess cookie before PHP session is hydrated.
 // This endpoint is consumed by vx_shell.js and must FAIL-SOFT (never 401).
